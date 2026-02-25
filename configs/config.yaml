@@ -1,0 +1,62 @@
+data:
+  csv_path: "data/data.csv" 
+  sep: ";"
+  start_date: "2022-01-03"
+
+modeling:
+  random_state: 42
+  dpi: 300
+  figsize: [16, 7]
+  blue_color: "#3DA8D7"
+  grey_color: "#4B4B4B"
+  default_color: "#C0C0C0"
+  train_size: 12
+  optuna_trials: 10
+  start_block: 12
+  patience_high: 1000
+  patience_low: 100
+
+aggregation:
+  groupby_col: "Monat_Jahr"
+  agg_map:
+    "Zielvariable_Gesamt": "sum"
+    "Fest 5 Jahre": "mean"
+    "Zinskurve": "mean"
+    "Price to Rent Ratio": "mean"
+    "Arbeitstage": "sum"
+    "Transaktionspreisindex Einfamilienhäuser": "mean"
+    "Fest 10 Jahre Konkurrenz (Min)": "mean"
+    "Transaktionspreisindex Eigentumswohnung": "mean"
+    "Mietpreisindex": "mean"
+    "Zuschlag Belehnung SARON": "mean"
+    "Zuschlag Tragbarkeit": "mean"
+    "Zuschlag Belehnung Fest": "mean"
+    "Mindestlimite": "mean"
+
+featuresset:
+  target: "Zielvariable_Gesamt"
+  features:
+    - "Transaktionspreisindex Einfamilienhäuser"
+    - "Transaktionspreisindex Eigentumswohnung"
+    - "Arbeitstage"
+    - "Mietpreisindex"
+    - "Zinskurve"
+    - "Zuschlag Belehnung SARON"
+    - "Zuschlag Belehnung Fest"
+    - "Zuschlag Tragbarkeit"
+    - "Mindestlimite"
+
+stakeholder_features:
+    - "Zuschlag Belehnung SARON"
+    - "Zuschlag Belehnung Fest"
+    - "Zuschlag Tragbarkeit"
+    - "Mindestlimite"
+
+  
+optional_features:
+    - "Transaktionspreisindex Einfamilienhäuser"
+    - "Transaktionspreisindex Eigentumswohnung"
+    - "Mietpreisindex"
+    - "Zinskurve"
+    - "Zielvariable_Gesamt"
+    
