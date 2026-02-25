@@ -1,0 +1,11 @@
+pandas
+numpy
+matplotlib
+PyYAML
+optuna
+shap
+scikit-learn
+statsmodels
+xgboost
+seaborn
+mrmr-selection
