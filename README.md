@@ -1,88 +1,93 @@
-# Bachelor Thesis ML Pipeline
+# Time-Series Forecasting Pipeline
 
-## Project goal
+End-to-end pipeline for predicting monthly mortgage closure volumes in a Swiss
+online banking channel, using interest rate indicators and market factors as
+predictors for proactive capacity planning.
 
-This repository presents a **public demo version of my bachelor thesis machine-learning workflow**. The project focuses on **time-series forecasting** and was designed to predict the **total number of closures for the next month** using a structured modelling pipeline.
+> **Best result: R² 0.764, MAE 3.29, error rate 18.88%** with Optuna-optimized Ridge Regression.
+> Structural analysis revealed two distinct customer channels, leading to
+> separate specialized models that better reflect each channel's dynamics.
 
-The main objective was not only to build forecasting models, but also to compare different feature-selection strategies, validation setups, and model families in a reproducible and interpretable way.
+---
 
-## Why this project matters
+## Results
 
-Forecasting tasks in business settings require more than fitting a single model once. A useful workflow should include careful feature selection, appropriate validation design, model comparison, and transparent evaluation.
+Optuna-optimized models under expanding-window validation:
 
-This repository demonstrates an academic forecasting pipeline that goes beyond a simple notebook experiment. It shows how different modelling decisions affect performance and how a forecasting workflow can be organized in a structured, end-to-end manner.
+| Model | R² | MAE | Error rate |
+|---|---|---|---|
+| Ridge Regression | **0.764** | **3.29** | **18.88%** |
+| Lasso Regression | 0.705 | 3.57 | 21.05% |
+| XGBoost | 0.617 | 4.10 | 23.52% |
+| Linear Regression | 0.504 | 4.63 | 26.72% |
+| SARIMAX | 0.466 | 4.97 | 29.24% |
 
-## What this repository demonstrates
+---
 
-- structured academic machine-learning workflow
-- time-series forecasting for a monthly target
-- feature selection and feature comparison
-- baseline modelling across multiple model families
-- comparison of static split and expanding-window validation
-- automated hyperparameter optimization with Optuna
-- reproducible notebook-based experimentation
-- clear separation of configuration, data, notebooks, and generated figures
+## Approach
 
-## Data disclaimer
+| Stage | What was done |
+|---|---|
+| **Feature selection** | Five methods compared: Mutual Information, SelectKBest, RFE, Lasso, Random Forest |
+| **Baseline modelling** | Five model families under 80/20 split and expanding-window validation |
+| **Hyperparameter optimization** | Optuna for feature refinement and parameter search across all models |
+| **Model interpretation** | SHAP analysis and what-if scenarios for actionable business insights |
 
-The dataset included in this repository is **not real**. It is a **synthetic / dummy dataset** provided only to demonstrate the pipeline in a public and runnable form.
+---
 
-Because the data is not real, the generated outputs, metrics, and forecasts are **illustrative only** and should not be interpreted as meaningful business results. Example plots generated from the dummy data are stored under `reports/figures`.
+## Key Findings
 
-To obtain realistic results, the input data would need to be replaced with a real dataset in the same format, or the preprocessing pipeline would need to be adapted accordingly.
+**Ridge Regression outperforms all other model families.** Under Optuna-optimized
+expanding-window validation, Ridge achieves R² 0.764 and MAE 3.29, outperforming
+XGBoost (R² 0.617) and SARIMAX (R² 0.466). The L2 regularization in Ridge handles
+multicollinearity in the interest rate features more effectively than the other approaches.
 
-## Methodology
+**Channel structure matters more than model complexity.** Exploratory analysis
+revealed that two customer channels behave structurally differently. Splitting into
+channel-specific Ridge models improved interpretability and produced more stable
+forecasts than a single combined model.
 
-The forecasting workflow consists of four main stages.
+**SARON surcharge and rent price index are the strongest predictors.** SHAP analysis
+identified the SARON reward surcharge (Lag1) and rent price index (Lag3) as the
+features with the largest influence on predicted volume, providing concrete and
+actionable levers for demand management.
 
-### 1. Feature selection
+**Expanding-window validation is essential for honest time-series evaluation.**
+The 80/20 static split significantly overestimates real-world performance. Expanding window validation, which mirrors the actual deployment scenario, produces a more
+reliable estimate of production accuracy.
 
-Multiple feature-selection approaches were applied and compared to identify relevant predictors for the forecasting task:
+---
 
-- Mutual Information
-- SelectKBest
-- Recursive Feature Elimination (RFE)
-- Lasso Regression
-- Random Forest
-- correlation heatmap for feature comparison
+## Visualisations
 
-### 2. Model comparison and validation
+Ridge Regression forecast vs. actual monthly closure volumes. R² 0.764, MAE 3.29,
+error rate 18.88% under Optuna-optimized expanding-window validation.
 
-The following forecasting models were evaluated throughout the study:
+<img src="assets/forecast_ridge.png" alt="Ridge Regression forecast vs actual" width="900">
 
-- Linear Regression
-- Ridge Regression
-- Lasso Regression
-- SARIMAX
-- XGBoost
+SHAP feature importance for the Ridge model on the Brokermarket/Swissfex channel.
+The SARON reward surcharge (Lag1) has the strongest individual influence on predicted
+closure volume, followed by the rent price index (Lag3) and working days.
 
-These models were compared under two validation setups:
+<img src="assets/shap_ridge.png" alt="SHAP feature importance Ridge model" width="900">
 
-- **standard 80/20 split** for an initial baseline comparison
-- **expanding-window validation** to better reflect the sequential nature of time-series forecasting
+---
 
-### 3. Hyperparameter optimization with Optuna
+## Data
 
-Optuna was used to improve model configurations and compare optimized versions of the same forecasting models under the expanding-window setup.
-## Repository structure
+The dataset included in this repository is synthetic and provided only to demonstrate
+the pipeline in a runnable form. Because the data is not real, the metrics and forecasts
+are illustrative only. To obtain meaningful results, replace the input data with a real
+dataset in the same format as `data/data.csv`.
 
-```text
-Bachelor-Thesis-ML-pipeline/
-├── README.md
-├── LICENSE
-├── .gitignore
-├── requirements.txt
-├── configs/
-│   └── config.yaml
-├── data/
-│   └── data.csv
-├── notebooks/
-│   ├── 01_Feature Selection.ipynb
-│   ├── 02_Baseline modelling with 80,20 split.ipynb
-│   ├── 03_Baseline modelling with expanding window.ipynb
-│   └── 04_Optuna modelling with expanding window.ipynb
-└── reports/
-    └── figures/
-```
-## Status
-Completed public demo version of the bachelor thesis workflow. The repository contains the notebook-based pipeline, synthetic demonstration data, configuration files, and example output figures for a reproducible academic showcase.
+The plots in `reports/figures/` were generated from this synthetic dataset and are
+illustrative pipeline outputs only. The visualisations in `assets/` show results from
+the real dataset and reflect the actual model performance reported above.
+
+---
+
+## Notes
+
+Expanding-window validation was used as the primary evaluation setup to reflect the
+sequential nature of monthly forecasting. The 80/20 static split is included for
+comparison only and is not recommended for production evaluation of time-series models.
